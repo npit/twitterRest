@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-projectdir="/home/npittaras/Documents/project/twitterRest"
+projectdir=$(pwd)
 warname="twitterRest"
 
 warfile="$projectdir/target/twitter-keywordAPI-1.0-SNAPSHOT.war"
