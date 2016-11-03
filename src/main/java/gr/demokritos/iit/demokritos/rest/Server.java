@@ -6,23 +6,11 @@ import javax.ws.rs.core.Response;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
 import java.util.logging.*;
 
 @Path("/hello")
 public class Server {
-
-    @GET
-    @Path("/msg{param}")
-    public Response getMsg(@PathParam("param") String msg) {
-
-        String output = "Jersey say : " + msg;
-
-        return Response.status(200).entity(output).build();
-
-    }
-
 
     private static final Logger LOGGER = Logger.getLogger( Server.class.getName() );
     private static String keywordsFilePath="keywords";
@@ -48,46 +36,17 @@ public class Server {
         this("/home/nik/server.log");
         //this("server.log");
     }
-    @GET
-    @Path("hi")
-    public String serverHello(String name)
+
+    public keyword [] readKeywordsFile()
     {
-        LOGGER.log(Level.INFO,"Said hi");
-        return " hello " + name;
-
-    }
-
-
-//    @POST
-//    @Path("/setKeyword=kw")
-//    @Consumes(MediaType.APPLICATION_JSON)
-    public Response setKeywords(ArrayList<String> keywords)
-    {
-        if(keywords.isEmpty() || keywords == null)
+        if(true)
         {
-            throw new javax.ws.rs.WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("Empty or null keywords list").build());
+            ArrayList<keyword> keywords = new ArrayList<>();
+            keywords.add(new keyword());keywords.add(new keyword());
+            //keywords.get(0).setId(0);keywords.get(1).setId(1);
+            keywords.get(0).setValue("value0");keywords.get(1).setValue("value1");
+            return  keywords.toArray(new keyword[keywords.size()]);
         }
-        try {
-            BufferedWriter wr = new BufferedWriter(new FileWriter(keywordsFilePath));
-            for(String keyword : keywords)
-            {
-                wr.write(keyword + "\n");
-            }
-            wr.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return Response.status(200).entity("OK").build();
-    }
-
-    public Response getKeywords()
-    {
-        List<String> kw =  readKeywordsFile();
-        return Response.status(200).entity(kw).build();
-    }
-
-    public ArrayList<String> readKeywordsFile()
-    {
         ArrayList<String> keywords = new ArrayList<>();
         try {
             BufferedReader bf = new BufferedReader(new FileReader(keywordsFilePath));
@@ -108,7 +67,8 @@ public class Server {
         }
         LOGGER.log(Level.INFO,"Read twitter keywords: " + keywords);
         //System.out.println("Read twitter keywords: " + keywords);
-        return keywords;
+
+        return  keywords.toArray(new keyword[keywords.size()]);
     }
     @GET
     @Path("/test")
@@ -118,6 +78,49 @@ public class Server {
                 + "<body><h1>" + "Hello Jersey HTML" + "</h1></body>" + "</html> ";
     }
 
+    @GET
+    @Path("/testParam")
+    public String testparam(@DefaultValue("DefaultParamValue") @QueryParam("value") String value)
+    {
+
+        return "<html> " + "<title>" + "value is:[" + value + "]" + "</title>"
+                + "<body><h1>" + "Hello Jersey HTML" + "</h1></body>" + "</html> ";
+    }
+
+
+    @POST
+    @Path("/setKeywords")
+    @Consumes({MediaType.APPLICATION_JSON})
+    public Response putJSON(keyword[] obj)
+    {
+
+        if(obj.length == 0 || obj == null)
+        {
+            throw new javax.ws.rs.WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("Empty or null keywords list").build());
+        }
+        try {
+            BufferedWriter wr = new BufferedWriter(new FileWriter(keywordsFilePath));
+            for(keyword k: obj)
+            {
+                wr.write(k.getValue() + "\n");
+            }
+            wr.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Response.status(200).entity("OK").build();
+
+
+    }
+    @GET
+    @Path("/getKeywords")
+    @Produces(MediaType.APPLICATION_JSON)
+    public keyword[] getJSON()
+    {
+        keyword [] kwords = this.readKeywordsFile();
+
+        return kwords;
+    }
 
 
 }
