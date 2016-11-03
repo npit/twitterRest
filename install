@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+projectdir="$(pwd)twitter-keywordAPI"
+warname="twitterRest"
+
+warfile="/home/nik/work/iit/twitterRest/twitter-keywordAPI/target/twitter-keywordAPI-1.0-SNAPSHOT.war"
+warfolders="/home/nik/work/iit/twitterRest/twitter-keywordAPI/target/twitter-keywordAPI-1.0-SNAPSHOT/"
+webxml="/home/nik/work/iit/twitterRest/twitter-keywordAPI/src/main/webapp/WEB-INF/web.xml"
+
+webappsFolder="/var/lib/tomcat7/webapps"
+projectFolder="$webappsFolder/$warname"
+
+# clean up first
+sudo rm -rf $projectFolder
+sudo mkdir -p $projectFolder
+echo "$warfile -> ${webappsFolder}/$warname"
+sudo cp $warfile 		 ${webappsFolder}/${warname}.war
+echo "$(ls $warfolders) -> $projectFolder"
+sudo cp $warfolders/* -r $projectFolder/
+echo "$webxml -> $projectFolder/WEB-INF"
+sudo cp $webxml -r $projectFolder/WEB-INF
+
