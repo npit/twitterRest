@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 
 mvn clean package;
-
-
-projectdir="/home/npittaras/Documents/project/BDE/twitterRest"
+projectdir=$(pwd)
 warname="twitterRest"
 
 warfile="$projectdir/target/twitter-keywordAPI-1.0-SNAPSHOT.war"
