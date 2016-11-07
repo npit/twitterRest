@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+jsondata=""
+for kw in $@; do
+	if [ ! $jsondata == "" ]; then jsondata+=","; fi
+	jsondata+="{\"value\":\"$kw\",\"limit\":\"50\",\"lang\":\"en\"}"
+done
+echo "[${jsondata}]"
+curl  -X POST -H "Content-Type:application/json" http://localhost:8080/twitterRest/twitter-rest/hello/setKeywords -d "[${jsondata}]"
