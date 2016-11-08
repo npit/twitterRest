@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-mvn clean package;
+mvn clean package
 projectdir=$(pwd)
 warname="twitterRest"
 
@@ -25,13 +25,16 @@ sudo  cp $webxml -r $tomcatProjectFolder/WEB-INF
 
 # make auxiliary files & folders
 configFilesFolder="$tomcatProjectFolder/WEB-INF"
+keywordsFile="$configFilesFolder/keywords.txt"
+idsFile="$configFilesFolder/tweetids.txt"
+logFile="/var/log/tomcat7/twitterRest/logfile.log"
+propertiesFile="$configFilesFolder/twitterrest.properties"
 sudo  mkdir -p /var/log/tomcat7/twitterRest
-sudo  touch /var/log/tomcat7/twitterRest/logfile.log
 
-sudo touch $configFilesFolder/twitterrest.properties
-sudo touch $configFilesFolder/search_keywords.txt
-sudo chmod 777 $configFilesFolder/search_keywords.txt
-sudo chmod 777 $configFilesFolder/search_keywords.txt
-sudo ./populate_props.sh $configFilesFolder/twitterrest.properties
-# sudo chown -R tomcat7:tomcat7 $tomcatProjectFolder
-# sudo chown -R tomcat7:tomcat7 /var/log/tomcat7/twitterRest/
+
+sudo  touch "$propertiesFile" "$keywordsFile" "$idsFile" "$logFile"
+
+sudo chmod 777 "$keywordsFile" "$idsFile" "$logFile" "$propertiesFile"
+sudo ./populate_props.sh "$keywordsFile" "$idsFile" "$logFile" "$propertiesFile" 
+#sudo chown -R tomcat7:tomcat7 $tomcatProjectFolder
+sudo chown -R tomcat7:tomcat7 /var/log/tomcat7/twitterRest/
