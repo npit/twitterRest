@@ -4,22 +4,25 @@ jsondata=""
 count=0
 type=""
 [ $# -lt 2 ] && echo "Usage set <type> datum1 datum2 ..." && exit 1
-for kw in $@; do
+for item in $@; do
 	if [ $count -eq 0 ]; then
 		count=$(( count + 1 ))
-		type="$kw"
+		type="$item"
 		continue;
 	fi
 	if [ ! $jsondata == "" ]; then jsondata+=","; fi
-	if [ $type == "str" ]; then
-		jsondata+="{\"value\":\"$kw\"}"
-	elif [ $type == "kw" ]; then
-		jsondata+="{\"value\":\"$kw\",\"limit\":\"50\",\"lang\":\"en\"}"
+	if [ $type == "tweet-ids" ]; then
+		jsondata+="{\"value\":\"$item\"}"
+	elif [ $type == "tweet-keywords" ]; then
+		jsondata+="{\"value\":\"$item\",\"limit\":\"50\",\"lang\":\"en\"}"
 	else
 		echo "Undefined type $type"
 		exit 1
 	fi
 done
 echo "[${jsondata}]"
-#echo "[curl  -X POST -H Content-Type:application/json http://localhost:8080/twitterRest/twitter-rest/hello/setKeywords?type=$type -d [${jsondata}]]"
-curl  -X POST -H "Content-Type:application/json" "http://localhost:8080/twitterRest/twitter-rest/hello/set$type" -d "[${jsondata}]"
+if [ $type == "tweet-ids" ]; then
+	curl  -X POST -H "Content-Type:application/json" "http://localhost:8080/twitterRest/io/setTweetIDs" -d "[${jsondata}]"
+else
+curl  -X POST -H "Content-Type:application/json" "http://localhost:8080/twitterRest/io/setTweetKeywords" -d "[${jsondata}]"
+fi

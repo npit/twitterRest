@@ -16,7 +16,7 @@ import java.util.logging.*;
 import java.lang.Class;
 import java.lang.reflect.Constructor;
 
-@Path("/hello")
+@Path("/io")
 public class Server {
 
     private static final Logger LOGGER = Logger.getLogger( Server.class.getName() );
@@ -68,8 +68,8 @@ public class Server {
         StringObj.filePath = (tweetIDsFilePath);
 
         Parsable.ClassNames = new HashMap();
-        Parsable.ClassNames.put("str","StringObj");
-        Parsable.ClassNames.put("kw","keyword");
+        Parsable.ClassNames.put("tweet-ids","StringObj");
+        Parsable.ClassNames.put("tweet-keywords","keyword");
         try {
             // read properties file
 
@@ -181,7 +181,7 @@ public class Server {
     // we have to specify each interface explicitly to be able to deserialize the argument
     // a more clever way should obviously exist
     @POST
-    @Path("/setstr")
+    @Path("/setTweetIDs")
     @Consumes({MediaType.APPLICATION_JSON})
     public Response set(StringObj[] obj)
     {
@@ -214,7 +214,7 @@ public class Server {
 
     }
     @POST
-    @Path("/setkw")
+    @Path("/setTweetKeywords")
     @Consumes({MediaType.APPLICATION_JSON})
     public Response set(keyword[] obj)
     {
@@ -259,22 +259,22 @@ public class Server {
     @GET
     @Path("/get")
     @Produces(MediaType.APPLICATION_JSON)
-    public Parsable [] getJSON(@QueryParam("type") String type)
+    public Parsable [] getJSON(@QueryParam("type") String argtype)
     {
-        type = Parsable.ClassNames.get(type);
+        String type = Parsable.ClassNames.get(argtype);
         String classtype = "gr.demokritos.iit.demokritos.rest." + type;
         Parsable [] obj = null;
         try {
             obj = readParsablesFile(Class.forName(classtype));
         } catch (ClassNotFoundException e) {
             throw new javax.ws.rs.WebApplicationException(Response.
-                    status(HttpURLConnection.HTTP_INTERNAL_ERROR).
-                    entity("Undefined object type[" +classtype+ "] :\n" + e.getMessage()).build());
+                    status(HttpURLConnection.HTTP_BAD_REQUEST).
+                    entity("Undefined resource object [" +argtype+ "] ").build());
         }
         if(obj == null)
         {
-            obj = (Parsable[]) new StringObj[1];
-            obj[0] = new StringObj("EMPTY");
+            obj = (Parsable[]) new StringObj[0];
+
         }
         return obj;
     }
