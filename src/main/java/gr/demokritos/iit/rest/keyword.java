@@ -1,4 +1,4 @@
-package gr.demokritos.iit.demokritos.rest;
+package gr.demokritos.iit.rest;
 //import java.io.Serializable;
 public class keyword  extends Parsable
 {

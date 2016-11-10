@@ -2,3 +2,4 @@ twitterRest_backup/*
 target/*
 .idea/*
 *.iml
+tmp/

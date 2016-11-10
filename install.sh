@@ -4,8 +4,8 @@ mvn clean package
 projectdir=$(pwd)
 warname="twitterRest"
 
-warfile="$projectdir/target/twitter-keywordAPI-1.0-SNAPSHOT.war"
-warfolders="$projectdir/target/twitter-keywordAPI-1.0-SNAPSHOT/"
+warfile="$projectdir/target/restService-1.0-SNAPSHOT.war"
+warfolders="$projectdir/target/restService-1.0-SNAPSHOT/"
 webxml="$projectdir/src/main/webapp/WEB-INF/web.xml"
 
 webappsFolder="/var/lib/tomcat7/webapps"

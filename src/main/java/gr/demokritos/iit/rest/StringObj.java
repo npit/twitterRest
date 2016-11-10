@@ -1,6 +1,5 @@
 
-package gr.demokritos.iit.demokritos.rest;
-
+package gr.demokritos.iit.rest;
 public class StringObj extends Parsable
 {
 //	public static String id = "str";

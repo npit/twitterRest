@@ -1,4 +1,6 @@
-package gr.demokritos.iit.demokritos.rest;
+package gr.demokritos.iit.rest;
+
+import gr.demokritos.iit.rest.util.FileAccessor;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -82,6 +84,7 @@ public class Server {
             Logger.getLogger("").addHandler(handler);
 
             handler.setLevel(Level.ALL);
+
         } catch (IOException e) {
             e.printStackTrace();
             throw new javax.ws.rs.WebApplicationException(Response.
@@ -102,14 +105,24 @@ public class Server {
 
         }
 
-        try {
-            BufferedWriter wr = new BufferedWriter(new FileWriter(destination));
-            for( Parsable datum : data)
-            {
-                LOGGER.log(Level.INFO,"Writing " + data.toString());
-                wr.write(datum.toString() + "\n");
-            }
-            wr.close();
+        // write with lock protection
+        FileAccessor fa = new FileAccessor(destination);
+        LOGGER.log(Level.INFO,"Attempting to lock output file: " + destination);
+        if(!fa.lock())
+        {
+            throw new javax.ws.rs.WebApplicationException(Response.
+                    status(HttpURLConnection.HTTP_INTERNAL_ERROR).
+                    entity("Failed to lock shared file").build());
+        }
+        LOGGER.log(Level.INFO,"Locked: " + destination);
+        ArrayList<String> strdata = new ArrayList<>();
+
+        for( Parsable datum : data)
+            strdata.add(datum.toString());
+
+        try
+        {
+            fa.append(strdata);
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -118,6 +131,8 @@ public class Server {
 
             throw new IOException(e);
         }
+        fa.unlock();
+        LOGGER.log(Level.INFO,"Unlocked: " + destination);
         LOGGER.log(Level.INFO,"Wrote keywords to destination " + destination + ".");
 
     }
@@ -246,15 +261,7 @@ public class Server {
 
     }
 
-    @GET
-    @Path("/getKeywords")
-    @Produces(MediaType.APPLICATION_JSON)
-    public keyword[] getKeywords()
-    {
-        keyword [] kwords = this.readKeywordsFile();
 
-        return kwords;
-    }
 
     @GET
     @Path("/get")
@@ -262,7 +269,7 @@ public class Server {
     public Parsable [] getJSON(@QueryParam("type") String argtype)
     {
         String type = Parsable.ClassNames.get(argtype);
-        String classtype = "gr.demokritos.iit.demokritos.rest." + type;
+        String classtype = "gr.demokritos.iit.rest." + type;
         Parsable [] obj = null;
         try {
             obj = readParsablesFile(Class.forName(classtype));
@@ -289,7 +296,7 @@ public class Server {
             Object obj = (Constructor.newInstance());
             String filepath = (String) obj.getClass().getField("filePath").get(obj);
 
-                    BufferedReader bf = new BufferedReader(new FileReader(filepath));
+            BufferedReader bf = new BufferedReader(new FileReader(filepath));
             String line;
             while((line = bf.readLine()) != null)
             {
@@ -305,10 +312,16 @@ public class Server {
         LOGGER.log(Level.INFO,"Read twitter data: " + data);
 
 
-        if(data.isEmpty()) return null;
+        if(data.isEmpty())
+        {
+            LOGGER.log(Level.INFO,"Read null twitter data: " + data);
+            return null;
+        }
 
         Parsable[] karray = (Parsable[]) Array.newInstance(classtype,data.size());
         karray = data.toArray(karray);
+
+        LOGGER.log(Level.INFO,"Returning: " + karray);
         return  karray;
 
         } catch (FileNotFoundException e) {

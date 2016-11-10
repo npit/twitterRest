@@ -1,5 +1,4 @@
-package gr.demokritos.iit.demokritos.rest;
-
+package gr.demokritos.iit.rest;
 import java.util.Map;
 
 public class Parsable

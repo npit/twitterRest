@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-mvn archetype:generate -DgroupId=gr.demokritos.iit.demokritos.rest -DartifactId=twitter-keywordAPI
+mvn archetype:generate -DgroupId=gr.demokritos.iit.rest -DartifactId=twitter-keywordAPI
 	-DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
