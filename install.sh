@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-mvn clean package
+echo "Building..."
+mvn -q clean package
 projectdir=$(pwd)
 warname="twitterRest"
 
